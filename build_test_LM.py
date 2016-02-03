@@ -7,6 +7,7 @@ import os.path
 import getopt
 
 SIZE_NGRAM = 4
+LANGUAGE_MODEL = {}
 
 # method to add padding
 def maxxi_padding(list, ngram_size = SIZE_NGRAM):
@@ -14,7 +15,7 @@ def maxxi_padding(list, ngram_size = SIZE_NGRAM):
 		list.insert(0, START_TOKEN)
 		list.append(END_TOKEN)
 
-# method to get ngrams from the sentence 
+# method to get ngrams from the sentence, size of ngram can be changed in the global variable 
 def ngram_from_line(line, ngram_size = SIZE_NGRAM):
 	line_list = list(line)
 	maxxi_padding(line_list)
