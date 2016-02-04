@@ -104,12 +104,15 @@ def calculate_probability(ngrams, probability_model):
 		for gram in ngrams:
 			if (gram in probability_language):
 				gram_prob = probability_language[gram]
-				log_prob = abs(math.log10(gram_prob))
+				log_prob = abs(math.log(gram_prob))
 				probability += gram_prob
 		if (probability > current_highest):
 			current_highest = probability
 			label = key
-	if (current_highest < 0.0075):
+		#print(key), 
+		#print(" "), 
+		#print(probability)
+	if (current_highest < 0.0065):
 		label = "others"
 	return label
 	
@@ -122,10 +125,12 @@ def test_LM(in_file, out_file, LM):
 	print "testing language models..."
     # for each input line, break string into ngrams, then check it against each probability model
 	test_contents = open(in_file).readlines()
+	writer = open(out_file, 'w')
 	for line in test_contents:
 		fourgrams = ngram_from_line(line)
-		print(calculate_probability(fourgrams, LM) + " " + line)
-		#write label to file
+		#print(calculate_probability(fourgrams, LM) + " " + line)
+		writer.write(calculate_probability(fourgrams, LM) + " " + line)
+	writer.close()
 	
 def usage():
 	print "usage: " + sys.argv[0] + " -b input-file-for-building-LM -t input-file-for-testing-LM -o output-file"
@@ -152,8 +157,7 @@ for o, a in opts:
 if input_file_b == None or input_file_t == None or output_file == None:
     usage()
     sys.exit(2)
-	
+
+usage()	
 LM = build_LM(input_file_b)
-for key in LM:
-	print(key)
-#test_LM(input_file_t, output_file, LM)
+test_LM(input_file_t, output_file, LM)
