@@ -30,11 +30,16 @@ def ngram_from_line(line, ngram_size = SIZE_NGRAM):
 		for counter_2 in range(0, ngram_size):
 			gram.append(line_list[counter + counter_2])
 		fourgrams.append(gram)
-	return fourgrams
-
+	#loop flattens fourgrams into string representation
+	new_list = []
+	for gram in fourgrams:
+		new_string = ''.join(gram)
+		new_list.append(new_string)
+	return new_list
+	
 # method checks the dictionary for the language, then adds ngrams to it if it exists. Creates a key otherwise
 def dict_update(language, ngrams):
-	gram_list = list(ngrams)
+	gram_list = ngrams
 	if (not language in LANGUAGE_MODEL):
 		LANGUAGE_MODEL[language] = gram_list
 		for gram in gram_list:
@@ -51,17 +56,19 @@ def dict_update(language, ngrams):
 # method does smootihng for the ngrams
 def smooth_dict():
 	for key in LANGUAGE_MODEL:
-		ngram_set = LANGUAGE_MODEL.get(key)
+		ngram_set = LANGUAGE_MODEL[key]
 		ngram_set.extend(UNIQUE_GRAMS)
+		LANGUAGE_MODEL[key] = ngram_set
 	
 def build_probability_model():
 	PM = {}
 	for key in LANGUAGE_MODEL:
 		probability_language = {}
-		values = LANGUAGE_MODEL.get(key)
+		values = LANGUAGE_MODEL[key]
 		num_grams = len(values)
-		counter = Counter(values)
-		for gram, occurences in counter.iteritems():
+		count = Counter(values)
+		for gram in count:
+			occurences = count[gram]
 			probability = occurences / float(num_grams)
 			probability_language[gram] = probability
 		PM[key] = probability_language
@@ -85,7 +92,7 @@ def build_LM(in_file):
 		dict_update(language_type, line_fourgram)
 	smooth_dict()
 	print("models built")
-	return build_probability_model
+	return build_probability_model()
 
 def calculate_probability(ngrams, probability_model):
 	current_highest = 0
@@ -93,8 +100,8 @@ def calculate_probability(ngrams, probability_model):
 		probability = 1
 		probability_language = probability_model[key]
 		for gram in ngrams:
-			gram_prob = probability_language[gram]
-			if (gram_prob != 0):
+			if (gram in probability_language):
+				gram_prob = probability_language[gram]
 				probability *= gram_prob
 		if (probability > current_highest and probability != 1):
 			label = key
@@ -113,7 +120,7 @@ def test_LM(in_file, out_file, LM):
 	test_contents = open(in_file).readlines()
 	for line in test_contents:
 		fourgrams = ngram_from_line(line)
-		print(calculate_probability(fourgrams, LM))
+		print(calculate_probability(fourgrams, LM) + " " + line)
 		#write label to file
 	
 def usage():
@@ -141,6 +148,6 @@ for o, a in opts:
 if input_file_b == None or input_file_t == None or output_file == None:
     usage()
     sys.exit(2)
-
+	
 LM = build_LM(input_file_b)
 test_LM(input_file_t, output_file, LM)

@@ -3,11 +3,16 @@ import nltk
 import sys
 import os.path
 import getopt
+from collections import Counter
 
 SIZE_NGRAM = 4
 START_TOKEN = "START_TOKEN_CHAR"
 END_TOKEN = "END_TOKEN_CHAR"
 
+def exit():
+	sys.exit(0)
+
+"""
 # method to add padding
 def maxxi_padding(list, ngram_size = SIZE_NGRAM):
 	for counter in range (1, SIZE_NGRAM):
@@ -31,8 +36,7 @@ def test_ngram_printer(thing):
 	for gram in thing:
 		print(gram)
 
-def exit():
-	sys.exit(0)
+
 
 langDict = {}
 	
@@ -62,4 +66,12 @@ dict_update(TEST_LINE_1)
 dict_update(TEST_LINE_2)
 dict_update(TEST_LINE_3)
 dict_printer(langDict)
+"""
+TEST_LIST = []
+TEST_LIST.append(START_TOKEN)
+TEST_LIST.append("a")
+TEST_LIST.append("b")
+TEST_LIST.append(END_TOKEN)
+str = ''.join(TEST_LIST)
+print(str)
 exit()
