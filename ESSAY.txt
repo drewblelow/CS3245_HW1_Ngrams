@@ -5,14 +5,27 @@ Replace this file with the answers to the essay questions here.
 i.e., the gram units are characters. Do you expect token-based ngram
 models to perform better?
 
+
+
 2. What do you think will happen if we provided more data for each
 category for you to build the language models? What if we only
 provided more data for Indonesian?
 
+
+
 3. What do you think will happen if you strip out punctuations and/or
 numbers? What about converting upper case characters to lower case?
+
+The results will be language dependent. For example, in English, only the start of sentences and names are
+in uppercase. For other languages such as German, many words have an uppercase first letter. In the case of
+numbers, removing them would improve accuracy as they should not add to the probability of any language.
 
 4. We use 4-gram models in this homework assignment. What do you think
 will happen if we varied the ngram size, such as using unigrams,
 bigrams and trigrams?
 
+http://www.cryptogram.org/cdb/words/frequency.html
+For many languages, there are certain letters which are used more than others. If we used unigrams, the
+assignment would resemble a cryptanalysis assignment. Identifying the languages might still be feasible.
+
+ 
