@@ -5,8 +5,11 @@ import nltk
 import sys
 import os.path
 import getopt
+from collections import Counter
 
 SIZE_NGRAM = 4
+START_TOKEN = "START_TOKEN_CHAR"
+END_TOKEN = "END_TOKEN_CHAR"
 LANGUAGE_MODEL = {}
 UNIQUE_GRAMS = []
 
@@ -51,6 +54,19 @@ def smooth_dict():
 		ngram_set = LANGUAGE_MODEL.get(key)
 		ngram_set.extend(UNIQUE_GRAMS)
 	
+def build_probability_model():
+	PM = {}
+	for key in LANGUAGE_MODEL:
+		probability_language = {}
+		values = LANGUAGE_MODEL.get(key)
+		num_grams = len(values)
+		counter = Counter(values)
+		for gram, occurences in counter.iteritems():
+			probability = occurences / float(num_grams)
+			probability_language[gram] = probability
+		PM[key] = probability_language
+	return PM
+	
 def build_LM(in_file):
 	"""
 	build language models for each label
@@ -58,10 +74,9 @@ def build_LM(in_file):
 	"""
 	print 'building language models...'
 	file_contents = open(in_file).readlines()
-	"""
-	for each line in the file, split the language type away from the text line
-	split the text line into n grams and add it to the correct language type
-	"""
+	#for each line in the file, split the language type away from the text line
+	#split the text line into n grams and add it to the correct language type
+	#apply smoothing to the final dictionary
 	for line in file_contents:
 		split_line = line.split(' ', 1)
 		language_type = split_line[0]
@@ -69,17 +84,37 @@ def build_LM(in_file):
 		line_fourgram = ngram_from_line(text_line)
 		dict_update(language_type, line_fourgram)
 	smooth_dict()
-	return LANGUAGE_MODEL
+	print("models built")
+	return build_probability_model
 
+def calculate_probability(ngrams, probability_model):
+	current_highest = 0
+	for key in probability_model:
+		probability = 1
+		probability_language = probability_model[key]
+		for gram in ngrams:
+			gram_prob = probability_language[gram]
+			if (gram_prob != 0):
+				probability *= gram_prob
+		if (probability > current_highest and probability != 1):
+			label = key
+	if (current_highest == 0):
+		label = "others"
+	return label
+	
 def test_LM(in_file, out_file, LM):
-    """
-    test the language models on new URLs
-    each line of in_file contains an URL
-    you should print the most probable label for each URL into out_file
-    """
-    print "testing language models..."
-    # This is an empty method
-    # Pls implement your code in below
+	"""
+	test the language models on new URLs
+	each line of in_file contains an URL
+	you should print the most probable label for each URL into out_file
+	"""
+	print "testing language models..."
+    # for each input line, break string into ngrams, then check it against each probability model
+	test_contents = open(in_file).readlines()
+	for line in test_contents:
+		fourgrams = ngram_from_line(line)
+		print(calculate_probability(fourgrams, LM))
+		#write label to file
 	
 def usage():
 	print "usage: " + sys.argv[0] + " -b input-file-for-building-LM -t input-file-for-testing-LM -o output-file"
