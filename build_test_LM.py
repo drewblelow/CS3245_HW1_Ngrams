@@ -5,6 +5,7 @@ import nltk
 import sys
 import os.path
 import getopt
+import math
 from collections import Counter
 
 SIZE_NGRAM = 4
@@ -96,16 +97,19 @@ def build_LM(in_file):
 
 def calculate_probability(ngrams, probability_model):
 	current_highest = 0
+	num_grams = len(ngrams)
 	for key in probability_model:
-		probability = 1
+		probability = 0
 		probability_language = probability_model[key]
 		for gram in ngrams:
 			if (gram in probability_language):
 				gram_prob = probability_language[gram]
-				probability *= gram_prob
-		if (probability > current_highest and probability != 1):
+				log_prob = abs(math.log10(gram_prob))
+				probability += gram_prob
+		if (probability > current_highest):
+			current_highest = probability
 			label = key
-	if (current_highest == 0):
+	if (current_highest < 0.0075):
 		label = "others"
 	return label
 	
@@ -150,4 +154,6 @@ if input_file_b == None or input_file_t == None or output_file == None:
     sys.exit(2)
 	
 LM = build_LM(input_file_b)
-test_LM(input_file_t, output_file, LM)
+for key in LM:
+	print(key)
+#test_LM(input_file_t, output_file, LM)
