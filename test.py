@@ -27,43 +27,39 @@ def ngram_from_line(line, ngram_size = SIZE_NGRAM):
 		fourgrams.append(gram)
 	return fourgrams
 	
-def test_printer(thing):
+def test_ngram_printer(thing):
 	for gram in thing:
 		print(gram)
 
 def exit():
 	sys.exit(0)
 
-TEST_LINE = "asdfghjk lqw ertyu iop"
-process = ngram_from_line(TEST_LINE)
-test_printer(process)
-exit()
-
-"""
-# this method builds n grams from a string input line by iterating through the list
-def ngram_from_line1(line, ngram_size = SIZE_NGRAM):
-	line_list = list(line)
-	# loop - to attach start tokens to the first few ngrams
-	fourgrams = []
-	for counter in range(1, ngram_size):
-		gram = []
-		for counter_2 in range(counter, ngram_size):
-			gram.append(START_TOKEN)
-		for counter_3 in range(0, counter):
-			gram.append(line_list[counter_3])
-		fourgrams.append(gram)
-	# loop - process all the fourgrams that contain characters in the line
-	for counter in range (0, len(line_list) - ngram_size + 1):
-		gram = []
-		for counter_2 in range(0, ngram_size):
-			gram.append(line_list[counter + counter_2])
-		fourgrams.append(gram)
-	# loop - attach end tokens to the last few ngrams	
-	for counter in range(len(line_list) - ngram_size + 1, len(line_list)):
-		gram = []
+langDict = {}
+	
+def dict_update(line):
+	split_line = line.split(' ')
+	language = split_line[0]
+	if (not language in langDict):
+		word_list = []
+		for count in range (1, len(split_line)):
+			word_list.append(split_line[count])
+		langDict[language] = word_list
+	else :
+		current_list = langDict.get(language)
+		for count in range (1, len(split_line)):
+			current_list.append(split_line[count])
+		langDict[language] = current_list
 		
-		for counter_4 in range(len(line_list) - counter, ngram_size):
-			gram.append(END_TOKEN)
-		fourgrams.append(gram)
-	return fourgrams
-"""
+def dict_printer(dict):
+	for keys, values in dict.items():
+		print(keys)
+		print(values)
+
+TEST_LINE_1 = "language1 put me in here"
+TEST_LINE_2 = "language2 asdfgh"
+TEST_LINE_3 = "language1 here too"
+dict_update(TEST_LINE_1)
+dict_update(TEST_LINE_2)
+dict_update(TEST_LINE_3)
+dict_printer(langDict)
+exit()

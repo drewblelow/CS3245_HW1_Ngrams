@@ -28,6 +28,16 @@ def ngram_from_line(line, ngram_size = SIZE_NGRAM):
 		fourgrams.append(gram)
 	return fourgrams
 
+def dict_update(language, ngrams):
+	gram_list = list(ngrams)
+	if (not language in LANGUAGE_MODEL):
+		LANGUAGE_MODEL[language] = gram_list
+	else :
+		current_list = LANGUAGE_MODEL.get(language)
+		for gram in gram_list:
+			current_list.append(gram)
+		LANGUAGE_MODEL[language] = current_list
+	
 def build_LM(in_file):
 	"""
 	build language models for each label
@@ -44,8 +54,7 @@ def build_LM(in_file):
 		language_type = split_line[0]
 		text_line = split_line[1]
 		line_fourgram = ngram_from_line(text_line)
-		#print text_line
-	
+		dict_update(language_type, line_fourgram)
 	print 'finished building'
 
 def usage():
@@ -58,7 +67,7 @@ try:
 except getopt.GetoptError, err:
     usage()
     sys.exit(2)
-"""
+
 for o, a in opts:
     if o == '-b':
         input_file_b = a
@@ -68,11 +77,10 @@ for o, a in opts:
         output_file = a
     else:
         assert False, "unhandled option"
-"""
-"""
+
 if input_file_b == None or input_file_t == None or output_file == None:
     usage()
     sys.exit(2)
-"""
+
 LM = build_LM(input_file_b)
-#test_LM(input_file_t, output_file, LM)
+test_LM(input_file_t, output_file, LM)
