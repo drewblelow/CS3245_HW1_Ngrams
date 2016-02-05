@@ -9,6 +9,7 @@ import math
 from collections import Counter
 
 SIZE_NGRAM = 4
+NUM_NGRAMS = 0
 START_TOKEN = "START_TOKEN_CHAR"
 END_TOKEN = "END_TOKEN_CHAR"
 LANGUAGE_MODEL = {}
@@ -16,7 +17,9 @@ UNIQUE_GRAMS = []
 
 # method to add padding
 def maxxi_padding(list, ngram_size = SIZE_NGRAM):
-	for counter in range (1, SIZE_NGRAM):
+	global START_TOKEN
+	global END_TOKEN
+	for counter in range (1, ngram_size):
 		list.insert(0, START_TOKEN)
 		list.append(END_TOKEN)
 
@@ -40,29 +43,32 @@ def ngram_from_line(line, ngram_size = SIZE_NGRAM):
 	
 # method checks the dictionary for the language, then adds ngrams to it if it exists. Creates a key otherwise
 def dict_update(language, ngrams):
+	global LANGUAGE_MODEL
+	global UNIQUE_GRAMS
 	gram_list = ngrams
+	for gram in gram_list:
+		if (not gram in UNIQUE_GRAMS):
+			UNIQUE_GRAMS.append(gram)
 	if (not language in LANGUAGE_MODEL):
 		LANGUAGE_MODEL[language] = gram_list
-		for gram in gram_list:
-			if (not gram in UNIQUE_GRAMS):
-				UNIQUE_GRAMS.append(gram)
 	else :
 		current_list = LANGUAGE_MODEL.get(language)
-		for gram in gram_list:
-			current_list.append(gram)
-			if (not gram in UNIQUE_GRAMS):
-				UNIQUE_GRAMS.append(gram)
+		current_list.extend(gram_list)
 		LANGUAGE_MODEL[language] = current_list
 	
 # method does smootihng for the ngrams
 def smooth_dict():
+	global LANGUAGE_MODEL
+	global UNIQUE_GRAMS
 	for key in LANGUAGE_MODEL:
+		print(key)
 		ngram_set = LANGUAGE_MODEL[key]
 		ngram_set.extend(UNIQUE_GRAMS)
 		LANGUAGE_MODEL[key] = ngram_set
 	
 def build_probability_model():
 	PM = {}
+	global LANGUAGE_MODEL
 	for key in LANGUAGE_MODEL:
 		probability_language = {}
 		values = LANGUAGE_MODEL[key]
@@ -92,7 +98,9 @@ def build_LM(in_file):
 		line_fourgram = ngram_from_line(text_line)
 		dict_update(language_type, line_fourgram)
 	smooth_dict()
-	print("models built")
+	#print("models built with "),
+	#print(NUM_NGRAMS),
+	#print(" ngrams")
 	return build_probability_model()
 
 def calculate_probability(ngrams, probability_model):
@@ -120,7 +128,7 @@ def test_LM(in_file, out_file, LM):
 	"""
 	test the language models on new URLs
 	each line of in_file contains an URL
-	you should print the most probable label for each URL into out_file
+	you should #print the most probable label for each URL into out_file
 	"""
 	print "testing language models..."
     # for each input line, break string into ngrams, then check it against each probability model
@@ -128,16 +136,18 @@ def test_LM(in_file, out_file, LM):
 	writer = open(out_file, 'w')
 	for line in test_contents:
 		fourgrams = ngram_from_line(line)
-		#print(calculate_probability(fourgrams, LM) + " " + line)
-		writer.write(calculate_probability(fourgrams, LM) + " " + line)
+		label = calculate_probability(fourgrams, LM)
+		writer.write(label + " " + line)
+		#print(label + " " + line)
 	writer.close()
 	
 def usage():
 	print "usage: " + sys.argv[0] + " -b input-file-for-building-LM -t input-file-for-testing-LM -o output-file"
-	
+
 input_file_b = "input.train.txt"
 input_file_t = "input.test.txt"
 output_file = "output.txt"
+	
 try:
     opts, args = getopt.getopt(sys.argv[1:], 'b:t:o:')
 except getopt.GetoptError, err:
@@ -158,6 +168,6 @@ if input_file_b == None or input_file_t == None or output_file == None:
     usage()
     sys.exit(2)
 
-usage()	
 LM = build_LM(input_file_b)
 test_LM(input_file_t, output_file, LM)
+#print(len(UNIQUE_GRAMS))

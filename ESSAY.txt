@@ -5,27 +5,32 @@ Replace this file with the answers to the essay questions here.
 i.e., the gram units are characters. Do you expect token-based ngram
 models to perform better?
 
-
+	I would expect token based ngrams to work better as there is context(phrases). For languanges with similar or
+	overlapping words, such as Malaysian Malay and Indonesian Malay, char based ngrams will have very similar 
+	probability models for the languages as the ngrams are spelling based.
 
 2. What do you think will happen if we provided more data for each
 category for you to build the language models? What if we only
 provided more data for Indonesian?
 
-
+	Depending on the data, the model might overtrain on the Indonesian language(similar to machine learning).
+	Alternatively, if the data set has a very large, yet sparse, coverage of the language, the model will assign
+	a very low  and uniform probability to all the ngrams found in the data set
 
 3. What do you think will happen if you strip out punctuations and/or
 numbers? What about converting upper case characters to lower case?
 
-The results will be language dependent. For example, in English, only the start of sentences and names are
-in uppercase. For other languages such as German, many words have an uppercase first letter. In the case of
-numbers, removing them would improve accuracy as they should not add to the probability of any language.
+	The results will be language dependent. For example, in English, only the start of sentences and names are
+	in uppercase. For other languages such as German, many words have an uppercase first letter. In the case of
+	numbers, removing them would improve accuracy as they should not add to the probability of any language.
 
 4. We use 4-gram models in this homework assignment. What do you think
 will happen if we varied the ngram size, such as using unigrams,
 bigrams and trigrams?
 
-http://www.cryptogram.org/cdb/words/frequency.html
-For many languages, there are certain letters which are used more than others. If we used unigrams, the
-assignment would resemble a cryptanalysis assignment. Identifying the languages might still be feasible.
+	http://www.cryptogram.org/cdb/words/frequency.html
+	For many languages, there are certain letters which are used more than others. If we used unigrams, the
+	assignment would resemble a cryptanalysis assignment. Identifying the languages might still be feasible.
 
- 
+	for bigrams and trigrams, the accuracy dropped to about 55% (tested using build_test_LM.py). Numbers above
+	5 produced terrible results too 
